@@ -1,9 +1,12 @@
+using Authentication.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -18,6 +21,7 @@ namespace Authentication
 {
     public class Startup
     {
+        private string _connection = null;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -65,6 +69,11 @@ namespace Authentication
                   // Only use this when the sites are on different domains
                   options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
               });
+            var builder = new SqlConnectionStringBuilder(Configuration.GetConnectionString("AuthDB"));
+            _connection = builder.ConnectionString;
+
+            services.AddDbContext<AuthDatabaseContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("AuthDB")));
             services.AddControllers();
         }
 
