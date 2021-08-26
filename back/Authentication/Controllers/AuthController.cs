@@ -1,6 +1,7 @@
 ﻿using Authentication.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -68,6 +69,48 @@ namespace Authentication.Controllers
                 }
             }
             return StatusCode(501);
+        }
+
+        [HttpGet]
+        [Route("logout")]
+        [Produces("application/json")]
+        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+        public IActionResult Logout()
+        {
+            try
+            {
+                HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).Wait();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return StatusCode(500);
+            }
+        }
+
+        [HttpGet]
+        [Route("isLogged")]
+        [Produces("application/json")]
+        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+        public IActionResult IsLogged()
+        {
+            try
+            {
+                if (Request.Cookies.ToList().Exists(cookie => cookie.Key == "UserLoginCookie"))
+                {
+                    return Ok("User is logged");
+                }
+                else
+                {
+                    return new UnauthorizedResult();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return StatusCode(500);
+            }
         }
     }
 }
