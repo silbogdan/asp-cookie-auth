@@ -27,6 +27,7 @@ namespace Authentication.Models
                 entity.Property(e => e.UserId).ValueGeneratedNever();
 
                 entity.Property(e => e.Password)
+                    .IsRequired()
                     .HasMaxLength(255)
                     .IsUnicode(false);
 
