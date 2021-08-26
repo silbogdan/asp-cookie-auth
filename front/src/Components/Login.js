@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 
 axios.defaults.withCredentials = true;
 
-const Login = () => {
+const Login = (props) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
@@ -11,23 +11,18 @@ const Login = () => {
         event.preventDefault();
     
         var config = {
-            method: 'get',
-            url: 'https://localhost:44333/api/auth/login',
             headers: { 
               'Authorization': 'Basic ' + btoa(username + ':' + password)
             }
           };
           
-          axios(config)
-          .then(function (response) {
-            console.log(JSON.stringify(response.data));
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
+        const response = await axios.get('https://localhost:44333/api/auth/login', config);
 
         setPassword(() => '');
         setUsername(() => '');
+        if (response.status === 200) {
+            props.setLogged(() => true);
+        }
     }
 
     return (
