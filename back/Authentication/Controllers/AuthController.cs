@@ -89,28 +89,19 @@ namespace Authentication.Controllers
             }
         }
 
+        /*
+         * The only way a user can use this route is if UserLoginCookie is stored in the browser
+         * due to the 'Authorize' attribute, so no additional checks are required.
+         * If the user is logged, this method returns status 200 with the username in the body.
+         * This is how user info can be retrieved from the claims stored inside the cookie.
+         */
         [HttpGet]
         [Route("isLogged")]
         [Produces("application/json")]
         [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
         public IActionResult IsLogged()
         {
-            try
-            {
-                if (Request.Cookies.ToList().Exists(cookie => cookie.Key == "UserLoginCookie"))
-                {
-                    return Ok("User is logged");
-                }
-                else
-                {
-                    return new UnauthorizedResult();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return StatusCode(500);
-            }
+            return Ok(HttpContext.User.Claims.First(c => c.Type == "Username").Value.ToString());
         }
     }
 }

@@ -58,7 +58,7 @@ namespace Authentication
               {
                   options.Cookie.Name = "UserLoginCookie";
                   options.SlidingExpiration = true;
-                  options.ExpireTimeSpan = new TimeSpan(0, 1, 0); // Expires in 1 minute
+                  options.ExpireTimeSpan = new TimeSpan(0, 30, 0); // Expires in 30 minutes
                   options.Events.OnRedirectToLogin = (context) =>
                   {
                       context.Response.StatusCode = StatusCodes.Status401Unauthorized;
