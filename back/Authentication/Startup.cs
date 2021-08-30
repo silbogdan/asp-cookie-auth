@@ -85,8 +85,6 @@ namespace Authentication
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors("Dev");
-
             app.UseCookiePolicy(
             new CookiePolicyOptions
             {
@@ -96,6 +94,8 @@ namespace Authentication
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors("Dev");
 
             app.UseAuthentication();
 

@@ -11,13 +11,13 @@ function App() {
 
   useEffect(() => {
     const checkLogged = async () => {
-      const response = await axios.get('https://localhost:44333/api/auth/isLogged');
-
-      console.log(response.status);
-      if (response.status === 401)
-        setLogged(() => false);
-      else
-        setLogged(() => true);
+      try {
+        const response = await axios.get('https://localhost:44333/api/auth/isLogged');
+        setLogged(() => 1);
+        console.log(response.status);
+      } catch (err) {
+        setLogged(() => 0);
+      }
     }
 
     checkLogged();
