@@ -1,9 +1,12 @@
+using Authentication.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -18,6 +21,7 @@ namespace Authentication
 {
     public class Startup
     {
+        private string _connection = null;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -54,7 +58,7 @@ namespace Authentication
               {
                   options.Cookie.Name = "UserLoginCookie";
                   options.SlidingExpiration = true;
-                  options.ExpireTimeSpan = new TimeSpan(0, 1, 0); // Expires in 1 minute
+                  options.ExpireTimeSpan = new TimeSpan(0, 30, 0); // Expires in 30 minutes
                   options.Events.OnRedirectToLogin = (context) =>
                   {
                       context.Response.StatusCode = StatusCodes.Status401Unauthorized;
@@ -65,6 +69,11 @@ namespace Authentication
                   // Only use this when the sites are on different domains
                   options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
               });
+            var builder = new SqlConnectionStringBuilder(Configuration.GetConnectionString("AuthDB"));
+            _connection = builder.ConnectionString;
+
+            services.AddDbContext<AuthDatabaseContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("AuthDB")));
             services.AddControllers();
         }
 
@@ -76,8 +85,6 @@ namespace Authentication
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors("Dev");
-
             app.UseCookiePolicy(
             new CookiePolicyOptions
             {
@@ -87,6 +94,8 @@ namespace Authentication
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors("Dev");
 
             app.UseAuthentication();
 
