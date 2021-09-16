@@ -21,7 +21,8 @@ const Login = (props) => {
         setPassword(() => '');
         setUsername(() => '');
         if (response.status === 200) {
-            props.setLogged(() => true);
+            props.setLogged(() => 1);
+            
         }
     }
 

@@ -4,6 +4,14 @@ import Login from './Components/Login';
 import axios from 'axios';
 
 axios.defaults.withCredentials = true;
+axios.interceptors.response.use((response) => {
+  return response
+}, (err) => {
+  if (err.response.status === 401) {
+    console.log('Am primit 401');
+    Promise.reject(err);
+  }
+});
 
 function App() {
 
@@ -13,11 +21,16 @@ function App() {
     const checkLogged = async () => {
       try {
         const response = await axios.get('https://localhost:44333/api/auth/isLogged');
-        setLogged(() => 1);
-        console.log(response.status);
+        console.log(response.data);
+        if (response.data === 1) {
+          setLogged(() => 1);
+        } else {
+          setLogged(() => 0);
+        }
       } catch (err) {
         setLogged(() => 0);
       }
+      
     }
 
     checkLogged();
